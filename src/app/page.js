@@ -1,7 +1,7 @@
-export const dynamic = "force-dynamic"
-
+import { Suspense } from "react";
 import City from "./City";
-import error from "./error";
+
+
 
 export default async function Home({ searchParams }) {
 
@@ -23,9 +23,10 @@ export default async function Home({ searchParams }) {
   if (!res.ok) throw new Error("city not Found !")
 
   const cities = await get_cities()
-  const city_weather = await res.json()
+  const city_weather =  res
 
   return (
+
     <div className="w-full bg-black min-h-screen py-1">
       <h1 className="text-center text-white font-bold mt-10 text-2xl tracking-[3px]">Weather API </h1>
       <div className="w-[400px] mx-auto flex justify-center items-center mt-10 rounded-2xl flex-col min-h-[500px] bg-white">
@@ -34,14 +35,19 @@ export default async function Home({ searchParams }) {
           <p className="font-bold text-lg ">SELECT CITY : </p>
           <City crnt_city={city} cities={cities} />
         </div>
+        <Suspense fallback={<div className='w-full min-h-screen bg-white flex justify-center items-center text-3xl '>
+          LOADING...
+        </div>} >
           <Weather_com city_weather={city_weather} />
+        </Suspense>
       </div>
     </div>
+    
   );
 }
 
-const Weather_com = ({ city_weather }) => {
-  const data = city_weather;
+const Weather_com = async ({ city_weather }) => {
+  const data = await city_weather.json();
   const iconCode = data.weather[0].icon;
   const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
   return (
@@ -53,4 +59,6 @@ const Weather_com = ({ city_weather }) => {
     </div>
   );
 }
+
+// jab new city select krty to jb tk change ni hota tn tk loader kesy chlana ?
 
